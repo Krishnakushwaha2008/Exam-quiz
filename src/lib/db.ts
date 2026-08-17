@@ -19,7 +19,7 @@ type ClientOptions = ConstructorParameters<typeof PrismaClient>[0];
  */
 function createPrisma(): PrismaClient {
   const url = process.env.DATABASE_URL ?? "";
-  if (url.startsWith("postgres")) {
+  if (url.startsWith("postgresql")) {
     const pool = new Pool({ connectionString: url });
     const adapter = new PrismaNeon(pool);
     return new PrismaClient({ adapter } as unknown as ClientOptions);
@@ -30,3 +30,4 @@ function createPrisma(): PrismaClient {
 export const db = globalForPrisma.prisma ?? createPrisma();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db;
+export default db;
