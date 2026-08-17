@@ -36,6 +36,7 @@ bun.lock
 dev.log
 # vercel
 .vercel
+.env
 
 
 # typescript
