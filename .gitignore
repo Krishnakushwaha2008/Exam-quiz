@@ -44,3 +44,5 @@ local-*
 /skills/
 /test/
 /prompt
+bun.lock
+Caddyfile
