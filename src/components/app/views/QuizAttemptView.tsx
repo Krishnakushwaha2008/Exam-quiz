@@ -81,20 +81,20 @@ export function QuizAttemptView() {
     },
   });
 
-  // Keep the latest submit handler in a ref so the interval never
-  // resubscribes when submitMutation identity changes between renders.
-  submitRef.current = () => submitMutation.mutate();
+  useEffect(() => {
+    submitRef.current = () => submitMutation.mutate();
+  });
 
-  // Initialise timer state when a quiz loads. Using the render-time
-  // "adjust state when a value changes" pattern keeps setState out of
-  // effect bodies (which the React 19 lint rules disallow).
-  if (quiz && quiz.id !== quizKey) {
-    setQuizKey(quiz.id);
-    setTimeLeft(quiz.duration * 60);
-    setDeadline(Date.now() + quiz.duration * 60 * 1000);
-    startedAt.current = Date.now();
-    submittedRef.current = false;
-  }
+  // Initialise timer state when a quiz loads.
+  useEffect(() => {
+    if (quiz && quiz.id !== quizKey) {
+      setQuizKey(quiz.id);
+      setTimeLeft(quiz.duration * 60);
+      setDeadline(Date.now() + quiz.duration * 60 * 1000);
+      startedAt.current = Date.now();
+      submittedRef.current = false;
+    }
+  }, [quiz, quizKey]);
 
   // Countdown — ticks every second and auto-submits at zero. All setState
   // calls live inside the interval callback, which the lint rules allow.

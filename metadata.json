@@ -1,0 +1,8 @@
+{
+  "name": "ScholarEx",
+  "description": "A modern, secure online examination platform for students and educators with timed quizzes and real-time grading.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

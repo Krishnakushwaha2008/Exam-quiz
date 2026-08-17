@@ -46,3 +46,4 @@ local-*
 /prompt
 bun.lock
 Caddyfile
+store.md

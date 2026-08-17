@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { api } from "@/lib/fetch";
@@ -23,6 +23,7 @@ import type { SessionUser } from "@/types";
 export function AuthScreen() {
   const { refresh } = useAuth();
   const [tab, setTab] = useState<"login" | "register">("login");
+
 
   const onDone = (user: SessionUser) => {
     toast.success(
@@ -104,25 +105,37 @@ export function AuthScreen() {
             </TabsList>
 
             <TabsContent value="login">
-              <LoginForm onDone={onDone} />
+              {/* <LoginForm onDone={onDone} pickedCredentials={demoCredentials} /> */}
+              <LoginForm onDone={onDone}/>
             </TabsContent>
             <TabsContent value="register">
               <RegisterForm onDone={onDone} switchToLogin={() => setTab("login")} />
             </TabsContent>
           </Tabs>
-
-          <DemoAccountsCard onPick={(email, pw) => {}} />
         </div>
       </div>
     </div>
   );
 }
 
-function LoginForm({ onDone }: { onDone: (u: SessionUser) => void }) {
+function LoginForm({
+  onDone,
+  pickedCredentials,
+}: {
+  onDone: (u: SessionUser) => void;
+  pickedCredentials?: { email: string; password: string } | null;
+}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (pickedCredentials) {
+      setEmail(pickedCredentials.email);
+      setPassword(pickedCredentials.password);
+    }
+  }, [pickedCredentials]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -278,30 +291,3 @@ function ErrorBanner({ message }: { message: string }) {
   );
 }
 
-function DemoAccountsCard({ onPick }: { onPick: (email: string, pw: string) => void }) {
-  return (
-    <Card className="mt-6 border-dashed bg-muted/30 p-4">
-      <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-        <GraduationCap className="h-4 w-4" />
-        Demo accounts
-      </div>
-      <ul className="space-y-1.5 text-sm">
-        <li className="flex items-center justify-between gap-2">
-          <span className="text-muted-foreground">
-            Student: <span className="font-mono text-foreground">student@oqs.dev</span> /{" "}
-            <span className="font-mono text-foreground">student123</span>
-          </span>
-        </li>
-        <li className="flex items-center justify-between gap-2">
-          <span className="text-muted-foreground">
-            Admin: <span className="font-mono text-foreground">admin@oqs.dev</span> /{" "}
-            <span className="font-mono text-foreground">admin123</span>
-          </span>
-        </li>
-      </ul>
-      <p className="mt-2 text-xs text-muted-foreground">
-        Use these credentials to explore both the student and admin experiences.
-      </p>
-    </Card>
-  );
-}
