@@ -1,37 +1,62 @@
-// Online Examination System — Prisma schema (SQLite-adapted)
-// SQLite does not support native enums or @db.Text, so enums are
-// modelled as String fields constrained at the application layer.
+// Online Examination System — Prisma schema (Neon / PostgreSQL)
+// Native enums are now used (Role, Status, AnswerOption, Difficulty),
+// matching the original PRD. SQLite has been removed.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-/// App users. role: "STUDENT" | "ADMIN"
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum Status {
+  PASS
+  FAIL
+}
+
+enum AnswerOption {
+  A
+  B
+  C
+  D
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
 model User {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   name      String
   email     String   @unique
   password  String
-  role      String   @default("STUDENT")
+  role      Role     @default(STUDENT)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   results   Result[]
+
+  @@index([role])
 }
 
 model Quiz {
-  id           String     @id @default(cuid())
+  id           String     @id @default(uuid())
   title        String
-  description  String
+  description  String     @db.Text
   category     String
   duration     Int // minutes
   totalMarks   Int        @default(0)
   passingMarks Int        @default(0)
-  difficulty   String     @default("MEDIUM") // EASY | MEDIUM | HARD
+  difficulty   Difficulty @default(MEDIUM)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   questions    Question[]
@@ -40,26 +65,24 @@ model Quiz {
   @@index([category])
 }
 
-/// correctAnswer: "A" | "B" | "C" | "D"
 model Question {
-  id            String   @id @default(cuid())
+  id            String       @id @default(uuid())
   quizId        String
-  quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  questionText  String
+  quiz          Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  questionText  String       @db.Text
   optionA       String
   optionB       String
   optionC       String
   optionD       String
-  correctAnswer String // A | B | C | D
-  marks         Int      @default(1)
+  correctAnswer AnswerOption
+  marks         Int          @default(1)
   answers       Answer[]
 
   @@index([quizId])
 }
 
-/// status: "PASS" | "FAIL"
 model Result {
-  id          String   @id @default(cuid())
+  id          String   @id @default(uuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   quizId      String
@@ -67,8 +90,8 @@ model Result {
   score       Int
   totalMarks  Int
   percentage  Float
-  status      String // PASS | FAIL
-  timeSpent   Int     @default(0) // seconds spent
+  status      Status
+  timeSpent   Int      @default(0) // seconds spent
   attemptedAt DateTime @default(now())
   answers     Answer[]
 
@@ -76,15 +99,14 @@ model Result {
   @@index([quizId])
 }
 
-/// selectedAnswer: "A" | "B" | "C" | "D" | null (unanswered)
 model Answer {
-  id             String   @id @default(cuid())
-  resultId       String
-  result         Result   @relation(fields: [resultId], references: [id], onDelete: Cascade)
-  questionId    String
-  question       Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  selectedAnswer String?
-  isCorrect      Boolean  @default(false)
+  id              String        @id @default(uuid())
+  resultId        String
+  result          Result         @relation(fields: [resultId], references: [id], onDelete: Cascade)
+  questionId     String
+  question       Question        @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  selectedAnswer AnswerOption?
+  isCorrect      Boolean         @default(false)
 
   @@index([resultId])
   @@index([questionId])
