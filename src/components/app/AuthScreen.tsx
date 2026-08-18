@@ -34,19 +34,19 @@ export function AuthScreen({
 }: AuthScreenProps) {
   const { refresh } = useAuth();
   const [tab, setTab] = useState<"login" | "register">(initialTab);
-  const [demoCredentials, setDemoCredentials] = useState<{ email: string; password: string } | null>(
-    initialCredentials,
-  );
+  // const [demoCredentials, setDemoCredentials] = useState<{ email: string; password: string } | null>(
+  //   initialCredentials,
+  // );
 
   useEffect(() => {
     if (initialTab) setTab(initialTab);
   }, [initialTab]);
 
-  useEffect(() => {
-    if (initialCredentials) {
-      setDemoCredentials(initialCredentials);
-    }
-  }, [initialCredentials]);
+  // useEffect(() => {
+  //   if (initialCredentials) {
+  //     setDemoCredentials(initialCredentials);
+  //   }
+  // }, [initialCredentials]);
 
   const onDone = (user: SessionUser) => {
     toast.success(
@@ -140,17 +140,17 @@ export function AuthScreen({
             </TabsList>
 
             <TabsContent value="login">
-              <LoginForm onDone={onDone} pickedCredentials={demoCredentials} />
+              <LoginForm onDone={onDone} />
             </TabsContent>
             <TabsContent value="register">
               <RegisterForm onDone={onDone} switchToLogin={() => setTab("login")} />
             </TabsContent>
           </Tabs>
 
-          <DemoAccountsCard onPick={(email, pw) => {
+          {/* <DemoAccountsCard onPick={(email, pw) => {
             setTab("login");
             setDemoCredentials({ email, password: pw });
-          }} />
+          }} /> */}
         </div>
       </div>
     </div>
@@ -330,41 +330,41 @@ function ErrorBanner({ message }: { message: string }) {
   );
 }
 
-function DemoAccountsCard({ onPick }: { onPick: (email: string, pw: string) => void }) {
-  return (
-    <Card className="mt-6 border-dashed bg-muted/30 p-4">
-      <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-        <GraduationCap className="h-4 w-4" />
-        Demo accounts (Click to fill)
-      </div>
-      <div className="flex flex-col gap-2">
-        <button
-          type="button"
-          onClick={() => onPick("student@oqs.dev", "student123")}
-          className="flex items-center justify-between rounded-lg border border-border/80 bg-background/80 px-3 py-2 text-left text-xs transition-colors hover:border-primary hover:bg-primary/5"
-        >
-          <div>
-            <span className="font-semibold text-foreground">Student Demo</span>
-            <div className="text-muted-foreground font-mono text-[11px]">student@oqs.dev • student123</div>
-          </div>
-          <span className="text-xs font-medium text-primary">Use →</span>
-        </button>
+// function DemoAccountsCard({ onPick }: { onPick: (email: string, pw: string) => void }) {
+//   return (
+//     <Card className="mt-6 border-dashed bg-muted/30 p-4">
+//       <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+//         <GraduationCap className="h-4 w-4" />
+//         Demo accounts (Click to fill)
+//       </div>
+//       <div className="flex flex-col gap-2">
+//         <button
+//           type="button"
+//           onClick={() => onPick("student@oqs.dev", "student123")}
+//           className="flex items-center justify-between rounded-lg border border-border/80 bg-background/80 px-3 py-2 text-left text-xs transition-colors hover:border-primary hover:bg-primary/5"
+//         >
+//           <div>
+//             <span className="font-semibold text-foreground">Student Demo</span>
+//             <div className="text-muted-foreground font-mono text-[11px]">student@oqs.dev • student123</div>
+//           </div>
+//           <span className="text-xs font-medium text-primary">Use →</span>
+//         </button>
 
-        <button
-          type="button"
-          onClick={() => onPick("admin@oqs.dev", "admin123")}
-          className="flex items-center justify-between rounded-lg border border-border/80 bg-background/80 px-3 py-2 text-left text-xs transition-colors hover:border-primary hover:bg-primary/5"
-        >
-          <div>
-            <span className="font-semibold text-foreground">Admin Demo</span>
-            <div className="text-muted-foreground font-mono text-[11px]">admin@oqs.dev • admin123</div>
-          </div>
-          <span className="text-xs font-medium text-primary">Use →</span>
-        </button>
-      </div>
-      <p className="mt-2.5 text-xs text-muted-foreground">
-        Click any demo account above to auto-fill the login form.
-      </p>
-    </Card>
-  );
-}
+//         <button
+//           type="button"
+//           onClick={() => onPick("admin@oqs.dev", "admin123")}
+//           className="flex items-center justify-between rounded-lg border border-border/80 bg-background/80 px-3 py-2 text-left text-xs transition-colors hover:border-primary hover:bg-primary/5"
+//         >
+//           <div>
+//             <span className="font-semibold text-foreground">Admin Demo</span>
+//             <div className="text-muted-foreground font-mono text-[11px]">admin@oqs.dev • admin123</div>
+//           </div>
+//           <span className="text-xs font-medium text-primary">Use →</span>
+//         </button>
+//       </div>
+//       <p className="mt-2.5 text-xs text-muted-foreground">
+//         Click any demo account above to auto-fill the login form.
+//       </p>
+//     </Card>
+//   );
+// }
