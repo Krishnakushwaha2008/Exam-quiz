@@ -8,9 +8,8 @@ const nextConfig: NextConfig = {
   },
   reactStrictMode: false,
   turbopack: {
-    root: path.resolve(__dirname, "/"), 
-    // This should point to the folder containing your pnpm-lock.yaml
-    // In your case: C:\Users\nanua\New-project
+    root: path.resolve(__dirname, "../../"), 
+    // points two levels up from Aditya-portfolio → Nodejs-project → New-project
   },
 };
 
