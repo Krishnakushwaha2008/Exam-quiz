@@ -7,9 +7,11 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: false,
-  // turbopack: {
-  //   root: path.resolve(__dirname, "../../"), // Points to monorepo root (C:\Users\nanua\New-project)
-  // },
+  turbopack: {
+    root: path.resolve(__dirname, "/"), 
+    // This should point to the folder containing your pnpm-lock.yaml
+    // In your case: C:\Users\nanua\New-project
+  },
 };
 
 export default nextConfig;
