@@ -1,12 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { AppShell } from "@/components/app/AppShell";
 import { AuthScreen } from "@/components/app/AuthScreen";
+import { LandingPage } from "@/components/app/LandingPage";
 import { Logo } from "@/components/app/shared/Logo";
 
 export default function Home() {
   const { user, isLoading } = useAuth();
+  const [showAuth, setShowAuth] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const [authCreds, setAuthCreds] = useState<{ email: string; password: string } | null>(null);
 
   if (isLoading) {
     return (
@@ -22,7 +27,31 @@ export default function Home() {
     );
   }
 
-  if (!user) return <AuthScreen />;
+  // If authenticated, show full dashboard application
+  if (user) {
+    return <AppShell />;
+  }
 
-  return <AppShell />;
+  // If visitor clicked Sign In / Get Started, show AuthScreen with back capability
+  if (showAuth) {
+    return (
+      <AuthScreen
+        initialTab={authMode}
+        initialCredentials={authCreds}
+        onBackToLanding={() => setShowAuth(false)}
+      />
+    );
+  }
+
+  // Default for visitors: Modern High-Converting Landing Page
+  return (
+    <LandingPage
+      onOpenAuth={(mode = "login", creds = null) => {
+        setAuthMode(mode);
+        setAuthCreds(creds);
+        setShowAuth(true);
+      }}
+    />
+  );
 }
+

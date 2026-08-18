@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import {
+  ArrowLeft,
   BookOpenCheck,
   GraduationCap,
   ShieldCheck,
@@ -20,10 +21,32 @@ import {
 } from "lucide-react";
 import type { SessionUser } from "@/types";
 
-export function AuthScreen() {
-  const { refresh } = useAuth();
-  const [tab, setTab] = useState<"login" | "register">("login");
+interface AuthScreenProps {
+  initialTab?: "login" | "register";
+  initialCredentials?: { email: string; password: string } | null;
+  onBackToLanding?: () => void;
+}
 
+export function AuthScreen({
+  initialTab = "login",
+  initialCredentials = null,
+  onBackToLanding,
+}: AuthScreenProps) {
+  const { refresh } = useAuth();
+  const [tab, setTab] = useState<"login" | "register">(initialTab);
+  const [demoCredentials, setDemoCredentials] = useState<{ email: string; password: string } | null>(
+    initialCredentials,
+  );
+
+  useEffect(() => {
+    if (initialTab) setTab(initialTab);
+  }, [initialTab]);
+
+  useEffect(() => {
+    if (initialCredentials) {
+      setDemoCredentials(initialCredentials);
+    }
+  }, [initialCredentials]);
 
   const onDone = (user: SessionUser) => {
     toast.success(
@@ -83,7 +106,19 @@ export function AuthScreen() {
       {/* ===================== Auth form panel ===================== */}
       <div className="flex flex-col items-center justify-center bg-background px-4 py-10 sm:px-6">
         <div className="w-full max-w-md">
-          <div className="mb-8 lg:hidden">
+          {onBackToLanding && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onBackToLanding}
+              className="mb-4 -ml-2 text-xs text-muted-foreground hover:text-foreground gap-1.5"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              <span>Back to Home</span>
+            </Button>
+          )}
+
+          <div className="mb-6 lg:hidden">
             <Logo size="md" />
           </div>
 
@@ -105,13 +140,17 @@ export function AuthScreen() {
             </TabsList>
 
             <TabsContent value="login">
-              {/* <LoginForm onDone={onDone} pickedCredentials={demoCredentials} /> */}
-              <LoginForm onDone={onDone}/>
+              <LoginForm onDone={onDone} pickedCredentials={demoCredentials} />
             </TabsContent>
             <TabsContent value="register">
               <RegisterForm onDone={onDone} switchToLogin={() => setTab("login")} />
             </TabsContent>
           </Tabs>
+
+          <DemoAccountsCard onPick={(email, pw) => {
+            setTab("login");
+            setDemoCredentials({ email, password: pw });
+          }} />
         </div>
       </div>
     </div>
@@ -291,3 +330,41 @@ function ErrorBanner({ message }: { message: string }) {
   );
 }
 
+function DemoAccountsCard({ onPick }: { onPick: (email: string, pw: string) => void }) {
+  return (
+    <Card className="mt-6 border-dashed bg-muted/30 p-4">
+      <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        <GraduationCap className="h-4 w-4" />
+        Demo accounts (Click to fill)
+      </div>
+      <div className="flex flex-col gap-2">
+        <button
+          type="button"
+          onClick={() => onPick("student@oqs.dev", "student123")}
+          className="flex items-center justify-between rounded-lg border border-border/80 bg-background/80 px-3 py-2 text-left text-xs transition-colors hover:border-primary hover:bg-primary/5"
+        >
+          <div>
+            <span className="font-semibold text-foreground">Student Demo</span>
+            <div className="text-muted-foreground font-mono text-[11px]">student@oqs.dev • student123</div>
+          </div>
+          <span className="text-xs font-medium text-primary">Use →</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onPick("admin@oqs.dev", "admin123")}
+          className="flex items-center justify-between rounded-lg border border-border/80 bg-background/80 px-3 py-2 text-left text-xs transition-colors hover:border-primary hover:bg-primary/5"
+        >
+          <div>
+            <span className="font-semibold text-foreground">Admin Demo</span>
+            <div className="text-muted-foreground font-mono text-[11px]">admin@oqs.dev • admin123</div>
+          </div>
+          <span className="text-xs font-medium text-primary">Use →</span>
+        </button>
+      </div>
+      <p className="mt-2.5 text-xs text-muted-foreground">
+        Click any demo account above to auto-fill the login form.
+      </p>
+    </Card>
+  );
+}
